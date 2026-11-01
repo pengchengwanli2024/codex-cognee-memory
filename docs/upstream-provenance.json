@@ -1,0 +1,11 @@
+{
+  "schema": "upstream-provenance-v1",
+  "integration": "https://github.com/topoteretes/cognee-integrations/tree/main/integrations/codex",
+  "upstream_snapshot_version": "1.7.7",
+  "license_source_ref": "b132740960181e712f15c76ee80519cbd15fdb5d",
+  "license_source": "https://raw.githubusercontent.com/topoteretes/cognee-integrations/b132740960181e712f15c76ee80519cbd15fdb5d/LICENSE",
+  "license_sha256": "bc744b625121d92dea594052b797959b5c787cd1a347c7f6aa2801943ef6bf13",
+  "license": "Apache-2.0",
+  "notice_file_at_verified_upstream_root": false,
+  "note": "The local integration snapshot predates this release package; no exact upstream code commit is asserted. The pinned ref records license verification, not a claimed source-code baseline."
+}

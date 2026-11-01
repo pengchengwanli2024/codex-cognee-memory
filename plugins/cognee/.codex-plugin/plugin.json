@@ -1,0 +1,40 @@
+{
+  "name": "cognee",
+  "version": "1.7.7+local.3",
+  "description": "Community modification of Cognee for Codex: reviewed summary-only memory alongside Obsidian.",
+  "author": {
+    "name": "Topoteretes",
+    "url": "https://github.com/topoteretes"
+  },
+  "homepage": "https://docs.cognee.ai",
+  "repository": "https://github.com/pengchengwanli2024/codex-cognee-memory",
+  "license": "Apache-2.0",
+  "keywords": [
+    "memory",
+    "knowledge-graph",
+    "rag",
+    "codex",
+    "agents"
+  ],
+  "skills": "./skills/",
+  "hooks": "./hooks.json",
+  "interface": {
+    "displayName": "Cognee Local",
+    "shortDescription": "Recall and save reviewed summaries alongside Obsidian.",
+    "longDescription": "Project-scoped task-start recall and task-end confirmed sanitized summary storage. No automatic raw conversation or tool capture. Existing Obsidian memory stays canonical. Uses the existing local Cognee HTTP backend and model configuration; modified hooks require native approval.",
+    "developerName": "codex-cognee-memory contributors",
+    "category": "Engineering",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://docs.cognee.ai",
+    "defaultPrompt": [
+      "Use confirmed Cognee memory alongside Obsidian.",
+      "Recall verified outcomes for this project.",
+      "Verify the summary-only daily workflow."
+    ],
+    "brandColor": "#BC9BFF"
+  }
+}

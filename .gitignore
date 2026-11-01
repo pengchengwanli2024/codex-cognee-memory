@@ -1,0 +1,26 @@
+# Runtime state and credentials must never be committed.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.log
+*.jsonl
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.DS_Store
+.test-tmp/
+.cognee/
+.cognee-plugin/
+.cognee-workflow/
+.harness2/
+.harness2-preflight/
+verification/
+release/
+dist/
+build/

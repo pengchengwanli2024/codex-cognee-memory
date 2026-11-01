@@ -1,0 +1,64 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/daily_memory.py\" hook SessionStart",
+            "timeout": 45,
+            "statusMessage": "Modified community summary workflow: SessionStart"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/daily_memory.py\" hook UserPromptSubmit",
+            "timeout": 45,
+            "statusMessage": "Modified community summary workflow: UserPromptSubmit"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/daily_memory.py\" hook Stop",
+            "timeout": 45,
+            "statusMessage": "Modified community summary workflow: Stop"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/daily_memory.py\" hook PreCompact",
+            "timeout": 45,
+            "statusMessage": "Modified community summary workflow: PreCompact"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${PLUGIN_ROOT}/scripts/daily_memory.py\" hook SessionEnd",
+            "timeout": 3,
+            "statusMessage": "Modified community summary workflow: SessionEnd"
+          }
+        ]
+      }
+    ]
+  }
+}

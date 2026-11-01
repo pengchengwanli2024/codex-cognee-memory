@@ -1,0 +1,27 @@
+Codex Cognee Memory
+
+This community fork includes source from the Codex integration in:
+https://github.com/topoteretes/cognee-integrations/tree/main/integrations/codex
+
+Upstream copyright: Copyright 2026 Topoteretes UG.
+Upstream license: Apache License, Version 2.0; a full copy is included in LICENSE.
+
+Local extensions and documentation:
+Copyright 2026 codex-cognee-memory contributors.
+
+Modified portions include the plugin manifest, automatic hook declarations,
+memory/setup guidance, strict manual remember/search argument handling, and
+community documentation. Added portions include the reviewed-summary lifecycle
+adapter, local HTTP transport, finite privacy policy, portable tests, and
+explicitly scoped generated-answer helpers. See plugins/cognee/CHANGELOG.md.
+Modified executable/text files carry local change notices where the format
+supports comments. The JSON manifest description, JSON hook status messages,
+this NOTICE and the changelog identify the modified JSON configurations.
+
+This is not an official release of Cognee or OpenAI. The upstream names identify
+origin and interoperability; they do not imply sponsorship or endorsement.
+
+No upstream NOTICE was present at the verified upstream root or Codex integration
+directory. The pinned license-verification ref is recorded in
+docs/upstream-provenance.json; it is not asserted as the exact source baseline
+of the existing local integration snapshot.
