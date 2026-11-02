@@ -1,6 +1,6 @@
 # Verification and acceptance boundaries
 
-`desktop_ui_verified=false` at preparation time. A passing native CLI test is not
+`desktop_ui_verified=false` after the 2026-11-02 recheck. A passing native CLI test is not
 desktop UI acceptance. Keep blocked and failed evidence private and intact rather
 than deleting it or turning a missing desktop receipt into a pass.
 
@@ -8,8 +8,24 @@ Known desktop blocker: the reported test messages were identified by their known
 synthetic-input hashes and hook metadata as Home-workspace chats. Harness² rejects
 a business project that contains its own state directory, so the old UNKNOWN
 closure is retained. No dialogue contents were read for this diagnosis. A new
-desktop test in a concrete project is still pending because the desktop-control
-connection is unavailable. Do not treat a working CLI run as desktop acceptance.
+desktop test does not change that historical UNKNOWN. Do not treat a working CLI
+run as desktop acceptance.
+
+The recheck restored the official desktop app-tools connection, obtained native
+folder consent, registered the concrete project and created independent desktop
+chats with the correct working directory. The fresh synthetic marker did not
+obtain a corresponding automatic save receipt and was not recalled in the other
+chat. Those observations remain a non-pass.
+
+In the installed desktop version `26.1027.51404`, the official `create_thread` and
+`send_message_to_thread` entry points use `codex_app` tool-output delegation when
+called by another chat. They are not ordinary user-input turns. The official
+new-chat deep link only prefills the composer; it does not submit the prompt.
+These controls therefore cannot establish ordinary-user hook acceptance. This
+does not establish that every native lifecycle hook was skipped, or that an
+unrelated task receipt belongs to the test chat. Do not guess session mappings,
+forge caller identities, write trust state or bypass a denied GUI control to
+manufacture a passing result.
 
 ## Portable offline checks
 
