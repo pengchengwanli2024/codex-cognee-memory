@@ -16,6 +16,50 @@
 
 这不是零配置安装或无条件保证模型永远执行正确。新插件内容仍需原生 `/hooks` 审核；后端必须已配置可用。当前验收范围见下方，桌面 UI 验收尚未完成。
 
+## 本地后端配置（本机已配置）
+
+本机使用 **Cognee 1.6.5 + Ollama**，不依赖云端账号，也不需要付费 API：
+`~/.cognee-plugin/venv` 是插件自建的运行时，模型走本机 Ollama。
+
+配置写在 `~/.cognee/.env`（0600），插件、服务端与技能共用同一份：
+
+```sh
+COGNEE_BACKEND=local
+LLM_PROVIDER=ollama
+LLM_MODEL=ollama/llama3.2:3b          # 必须带 ollama/ 前缀
+LLM_ENDPOINT=http://127.0.0.1:11434   # 不要带 /v1
+LLM_API_KEY=ollama-local              # Ollama 用不到的占位值
+EMBEDDING_PROVIDER=ollama
+EMBEDDING_MODEL=nomic-embed-text
+EMBEDDING_ENDPOINT=http://127.0.0.1:11434/api/embed
+EMBEDDING_DIMENSIONS=768
+NO_PROXY=localhost,127.0.0.1,::1
+```
+
+三个值很容易写错，写错时的现象分别是：
+
+| 写法 | 现象 |
+|---|---|
+| `LLM_MODEL` 没有 `ollama/` 前缀 | `LLM Provider NOT provided` |
+| `LLM_ENDPOINT` 带 `/v1` | `OllamaException - 404 page not found` |
+| `NO_PROXY` 含 `[::1]` | `InvalidURL: Invalid port: ':1]'`，所有模型调用在发出前就失败 |
+
+服务端由 `~/Library/LaunchAgents/local.cognee.server.plist` 常驻（`launchd` 管理，
+`RunAtLoad` + 崩溃重启），监听 `127.0.0.1:8011`。Cognee 没有钩子宿主时也照样可用：
+
+```sh
+launchctl print gui/$(id -u)/local.cognee.server | grep state
+curl -s http://127.0.0.1:8011/health     # {"status":"ready",...}
+python3 plugins/cognee/scripts/doctor.py --json | head -5
+```
+
+Ollama 需要先起来：`brew services start ollama`。`nomic-embed-text` 的上下文是 2048 token，
+Cognee 会自动把 chunk 限制到该长度并给出提示，属于正常行为。
+
+验证过的链路（合成数据）：`begin` → `stage` → `flush`（`staged`→`submitted`→`indexed`）→
+另一个进程 `recall` 读回签名摘要，签名与项目隔离校验全部通过。
+首次 `remember` 会同时跑 `cognify`，本地 3B 模型上需要 1–2 分钟；此后 `flush` 轮询即可拿到 `indexed`。
+
 ## 在 DeepSeek Harness 中使用（1.7.7+local.4）
 
 `plugins/cognee/` 同时是一个 DeepSeek Harness（DSH）bundle。在 DSH 中选择“插件 → 添加插件”并指向该目录，
@@ -105,7 +149,7 @@ CHUNKS 可能把短 JSON 也切成片段。适配器只跟随 scoped 搜索命�
 
 | 验证层级 | 当前公开说明 |
 |---|---|
-| 可移植离线隐私/生命周期测试 | 本仓库提供 26 项标准库测试（含 4 项显式 begin 与 5 项 DSH bundle 测试） |
+| 可移植离线隐私/生命周期测试 | 本仓库提供 32 项标准库测试（含 4 项显式 begin、6 项 NO_PROXY 与 5 项 DSH bundle 测试） |
 | 本地真实后端与两个独立 Codex CLI 会话 | 开发环境已完成：自动 task、Stop 提交、独立会话自动召回；只使用合成夹具 |
 | 普通自然语言 CLI 新会话 | 6 项检查通过：没有 stage/helper 指令，助手自主暂存/跳过，真实 Stop 提交并可检索 |
 | Codex 桌面端普通自然语言新聊天 | `desktop_ui_verified=false`；仍需实际桌面验收，不能从 CLI 结果推断 |

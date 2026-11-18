@@ -144,6 +144,44 @@ def parse_env_file(path: Path) -> dict:
 _loaded = False
 
 
+#: Proxy bypass lists, in both spellings. A shell that sets these owns the
+#: values, so the file cannot correct them; the scrub below runs unconditionally.
+_NO_PROXY_VARS = ("NO_PROXY", "no_proxy")
+
+
+def _unbracket_ipv6_entries(value: str) -> str:
+    """Drop the square brackets some shells put around an IPv6 no_proxy entry.
+
+    ``NO_PROXY=localhost,127.0.0.1,::1,[::1]`` is a legitimate shell value, but
+    httpx parses each entry as a URL pattern and raises
+    ``InvalidURL: Invalid port: ':1]'`` for the bracketed form. httpx carries the
+    LLM and embedding clients in-process (the server and the adapters), so with
+    such a value in the environment every model call fails before it reaches
+    the endpoint — and the endpoint is loopback, which is exactly what the
+    bracket was trying to bypass. Brackets add nothing to a CIDR/host list
+    here, so removing them keeps the same bypass with a parseable value.
+    """
+    entries = []
+    for entry in str(value).split(","):
+        item = entry.strip()
+        if item.startswith("[") and item.endswith("]"):
+            item = item[1:-1]
+        if item:
+            entries.append(item)
+    return ",".join(entries)
+
+
+def normalize_no_proxy() -> None:
+    """Make NO_PROXY parseable by httpx, in place, without changing its meaning."""
+    for var in _NO_PROXY_VARS:
+        value = os.environ.get(var)
+        if not value:
+            continue
+        fixed = _unbracket_ipv6_entries(value)
+        if fixed != value:
+            os.environ[var] = fixed
+
+
 def load_env_file() -> None:
     """Inject env-file values into os.environ (setdefault). Never raises.
 
@@ -151,7 +189,9 @@ def load_env_file() -> None:
     several entry-point modules) parse the file at most once. The backend
     switch is applied afterwards — and also when there is no file at all, so
     ``COGNEE_BACKEND=local`` beats a ``COGNEE_BASE_URL`` exported in the shell
-    the same way it beats one defined in the file.
+    the same way it beats one defined in the file. ``NO_PROXY`` is normalized
+    last because it is the one variable whose *syntax*, not just its value,
+    breaks the in-process HTTP clients.
     """
     global _loaded
     if _loaded:
@@ -169,6 +209,7 @@ def load_env_file() -> None:
     except Exception:
         pass
     _apply_backend_switch()
+    normalize_no_proxy()
 
 
 def forced_backend_with_source() -> tuple[str, str]:

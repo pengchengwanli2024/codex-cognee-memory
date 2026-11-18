@@ -1,6 +1,6 @@
 {
   "name": "dsh-cognee-memory",
-  "version": "1.7.7-local.4",
+  "version": "1.7.7-local.5",
   "private": true,
   "description": "Cognee summary-only memory for DeepSeek Harness: reviewed, signed, project-scoped summaries stored in a local Cognee backend.",
   "license": "Apache-2.0",

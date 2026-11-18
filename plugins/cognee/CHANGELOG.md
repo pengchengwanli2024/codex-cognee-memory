@@ -1,4 +1,4 @@
-# Community changes: 1.7.7+local.4
+# Community changes: 1.7.7+local.5
 
 Modified by codex-cognee-memory contributors, 2026-11-18.
 
@@ -13,6 +13,11 @@ Modified by codex-cognee-memory contributors, 2026-11-18.
   `hooks.json` are unchanged.
 - DSH runs no lifecycle hooks, so recall and saving there are explicit, never automatic.
 - Add 4 offline tests for `begin`; add a separate bundle test file.
+- Normalize `NO_PROXY`/`no_proxy` on load: a bracketed IPv6 entry such as `[::1]` makes httpx raise
+  `InvalidURL: Invalid port: ':1]'`, so every in-process LLM and embedding call failed before it
+  reached the endpoint. The brackets carried no meaning in a host list. 6 offline tests cover it.
+- Document a working local Ollama backend in the README, including the three values whose exact
+  spelling decides whether Cognee can talk to it.
 
 # Community changes: 1.7.7+local.3
 
