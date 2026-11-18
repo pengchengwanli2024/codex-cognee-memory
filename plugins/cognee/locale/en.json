@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cognee memory",
+    "description": "Adds two skills. With cognee-daily-memory, ask the agent to recall or save verified project outcomes: it opens a task, retrieves signed summaries scoped to the project, and stores a small reviewed summary with evidence hashes. It never sends raw conversation, tool output or credentials. cognee-setup checks the connection. Recall and submission need a local Cognee HTTP backend on this machine and python3 3.9+ on macOS or Linux; without the backend, summaries stay staged locally and the agent reports that. Unlike in Codex, nothing runs automatically: DSH has no lifecycle hooks, so memory is used only when you ask. State is kept in ~/.cognee-workflow. A community adaptation of the Cognee Codex integration, not an official Cognee release."
+  }
+}

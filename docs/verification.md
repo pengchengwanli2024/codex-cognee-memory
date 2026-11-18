@@ -34,7 +34,7 @@ python3 -B -m unittest discover -s tests -p 'test_*.py' -v
 python3 -B scripts/check_release.py
 ```
 
-The 17 tests use temporary directories, synthetic facts and mock HTTP transport.
+The 26 tests (17 lifecycle, 4 explicit-begin, 5 DSH bundle) use temporary directories, synthetic facts and mock HTTP transport.
 They cover raw-content canaries, confirmation/privacy rejection before persistence,
 real artifact hashes, symlink containment, sensitive file names, signature and
 project isolation, single submission, read-only UNKNOWN recovery, fair pending

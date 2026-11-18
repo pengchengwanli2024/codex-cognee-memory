@@ -1,0 +1,6 @@
+# DeepSeek Harness bundle layer. Codex reads .codex-plugin/plugin.json and hooks.json instead.
+- insert:
+    # Registers the two skills named in dsh/skills.json. DSH runs no lifecycle hooks, so nothing is
+    # recalled or saved automatically; the skill drives the same adapter by explicit commands.
+    - id: cognee-memory-skills
+      name: dsh-cognee-memory

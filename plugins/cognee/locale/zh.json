@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Cognee 记忆",
+    "description": "提供两个技能。使用 cognee-daily-memory 时，让智能体检索或保存已验证的项目结论：它会开启任务、取回本项目范围内的已签名摘要，并保存一条经审阅、附证据哈希的小型摘要；不会发送原始对话、工具输出或凭据。cognee-setup 用于检查连接。检索和提交需要本机的 Cognee HTTP 后端，以及 macOS 或 Linux 上的 python3 3.9+；后端不可用时摘要只暂存在本地，智能体会如实说明。与 Codex 不同，这里不会自动运行：DSH 没有生命周期钩子，只有在你要求时才使用记忆。状态保存在 ~/.cognee-workflow。这是 Cognee Codex 集成的社区改编版，不是 Cognee 官方发行版。"
+  }
+}

@@ -378,7 +378,8 @@ def main():
     parser.add_argument('--project', default=os.getcwd())
     parser.add_argument('--task')
     parser.add_argument('--wait', type=float, default=0)
-    parser.add_argument('action', choices=['hook', 'stage', 'skip', 'flush', 'status', 'recall'])
+    parser.add_argument('--session', help='begin only: stable id of the calling conversation; random when omitted')
+    parser.add_argument('action', choices=['hook', 'begin', 'stage', 'skip', 'flush', 'status', 'recall'])
     parser.add_argument('event', nargs='?')
     args = parser.parse_args()
     try:
@@ -388,7 +389,11 @@ def main():
             result = handle_hook(args.event, payload)
         else:
             workflow = Workflow(args.project)
-            if args.action == 'stage':
+            if args.action == 'begin':
+                # For hosts without lifecycle hooks: open a task explicitly. Local
+                # only; no prompt is read and nothing is sent to the backend.
+                result = {'ok': True, 'phase': 'open', 'task': workflow.begin(args.session or uuid.uuid4().hex)}
+            elif args.action == 'stage':
                 result = workflow.stage(args.task, json.loads(sys.stdin.buffer.read(12_000)))
             elif args.action == 'skip':
                 result = workflow.skip(args.task)

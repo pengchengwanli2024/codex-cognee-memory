@@ -1,3 +1,19 @@
+# Community changes: 1.7.7+local.4
+
+Modified by codex-cognee-memory contributors, 2026-11-18.
+
+- Add a DeepSeek Harness (DSH) bundle in the same plugin directory: `package.json`,
+  `cordis.patch.yml`, a dependency-free skill provider in `dsh/`, an icon and English and
+  Chinese display metadata. Its npm version is `1.7.7-local.4`.
+- DSH exposes two skills, `cognee-daily-memory` and `cognee-setup`, with host notes prepended
+  from `dsh/skills.json`. The upstream manual helper skills are not exposed in DSH. Skill files
+  are unchanged.
+- Add the `begin` action to `daily_memory.py` so a host without lifecycle hooks can open a task
+  explicitly. It is local only: it reads no prompt and contacts no backend. Hook behavior and
+  `hooks.json` are unchanged.
+- DSH runs no lifecycle hooks, so recall and saving there are explicit, never automatic.
+- Add 4 offline tests for `begin`; add a separate bundle test file.
+
 # Community changes: 1.7.7+local.3
 
 Modified by codex-cognee-memory contributors, 2026-11-02.

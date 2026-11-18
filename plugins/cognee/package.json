@@ -1,0 +1,29 @@
+{
+  "name": "dsh-cognee-memory",
+  "version": "1.7.7-local.4",
+  "private": true,
+  "description": "Cognee summary-only memory for DeepSeek Harness: reviewed, signed, project-scoped summaries stored in a local Cognee backend.",
+  "license": "Apache-2.0",
+  "icon": "./assets/icon.svg",
+  "exports": {
+    ".": "./dsh/index.mjs",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./assets/icon.svg"
+  },
+  "files": [
+    "dsh",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "assets",
+    "scripts",
+    "skills",
+    "CHANGELOG.md",
+    "EVENTS.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

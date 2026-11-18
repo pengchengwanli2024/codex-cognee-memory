@@ -16,6 +16,25 @@
 
 这不是零配置安装或无条件保证模型永远执行正确。新插件内容仍需原生 `/hooks` 审核；后端必须已配置可用。当前验收范围见下方，桌面 UI 验收尚未完成。
 
+## 在 DeepSeek Harness 中使用（1.7.7+local.4）
+
+`plugins/cognee/` 同时是一个 DeepSeek Harness（DSH）bundle。在 DSH 中选择“插件 → 添加插件”并指向该目录，
+或让智能体用 `plugin_manager install_bundle` 安装其绝对路径；无需构建或额外依赖。
+
+DSH 中提供两个技能：`cognee-daily-memory`（检索与保存经审阅的项目摘要）和 `cognee-setup`（检查连接）。
+上游的手动辅助技能不在 DSH 中暴露。
+
+**DSH 没有生命周期钩子，因此这里不会自动检索或保存。** 没有注入的任务标识，也没有 Stop 钩子提交。
+技能改为显式调用同一个适配器：`begin` 开启任务（仅本地，不读取提示词、不联网）、`recall` 检索、
+`stage`/`skip` 暂存或跳过、`flush` 提交一次并报告 `staged` / `submitted` / `indexed` / `unknown`。
+隐私校验、签名、项目隔离、UNKNOWN 不重放等规则与 Codex 相同。
+
+检索和提交仍需要本机 Cognee HTTP 后端与其密钥。后端不可用时，`begin`、`stage`、`skip`、`status`
+仍可离线工作，`recall` 返回不可用，`flush` 保留 `unknown`；这不代表没有历史事实，也不代表已保存。
+
+DSH 适配的验证范围：离线测试、bundle 安装与技能加载、以及无后端时的显式命令链。
+带真实后端的 DSH 检索与提交未验证。
+
 ## 安装
 
 当前自动适配器面向 macOS/Linux 的 POSIX 环境，使用 `fcntl` 与私有文件权限；不宣称 Windows 自动钩子兼容。需要 Python 3.9+ 运行插件脚本，以及支持插件和原生钩子的 Codex。开发环境验证过 bundled Codex CLI `0.166.0-alpha.5.1`。
@@ -86,7 +105,7 @@ CHUNKS 可能把短 JSON 也切成片段。适配器只跟随 scoped 搜索命�
 
 | 验证层级 | 当前公开说明 |
 |---|---|
-| 可移植离线隐私/生命周期测试 | 本仓库提供 17 项标准库测试 |
+| 可移植离线隐私/生命周期测试 | 本仓库提供 26 项标准库测试（含 4 项显式 begin 与 5 项 DSH bundle 测试） |
 | 本地真实后端与两个独立 Codex CLI 会话 | 开发环境已完成：自动 task、Stop 提交、独立会话自动召回；只使用合成夹具 |
 | 普通自然语言 CLI 新会话 | 6 项检查通过：没有 stage/helper 指令，助手自主暂存/跳过，真实 Stop 提交并可检索 |
 | Codex 桌面端普通自然语言新聊天 | `desktop_ui_verified=false`；仍需实际桌面验收，不能从 CLI 结果推断 |

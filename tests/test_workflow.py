@@ -530,5 +530,65 @@ class WorkflowAcceptance(unittest.TestCase):
                     build.assert_not_called()
 
 
+class ExplicitBeginTests(unittest.TestCase):
+    """Hosts without lifecycle hooks open a task with the `begin` action."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.project = Path(self.temp.name) / 'project'
+        self.project.mkdir()
+        self.state = Path(self.temp.name) / 'state'
+        patcher = mock.patch.dict(os.environ, {'COGNEE_WORKFLOW_STATE_DIR': str(self.state)})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def run_main(self, *argv, stdin=b''):
+        import io
+        out = io.StringIO()
+        fake_in = SimpleNamespace(buffer=io.BytesIO(stdin), read=lambda n=-1: stdin.decode())
+        with mock.patch.object(sys, 'argv', ['daily_memory.py', '--project', str(self.project), *argv]), \
+                mock.patch.object(sys, 'stdout', out), mock.patch.object(sys, 'stdin', fake_in), \
+                mock.patch.object(dm, 'Client', side_effect=AssertionError('begin/stage/skip/status must stay offline')):
+            code = dm.main()
+        return code, json.loads(out.getvalue())
+
+    def test_begin_opens_a_local_task_without_any_backend(self):
+        code, result = self.run_main('begin')
+        self.assertEqual(code, 0)
+        self.assertEqual(result['phase'], 'open')
+        self.assertRegex(result['task'], r'^[0-9a-f]{32}$')
+        code, status = self.run_main('--task', result['task'], 'status')
+        self.assertEqual((code, status['phase']), (0, 'open'))
+
+    def test_begin_without_session_creates_distinct_tasks(self):
+        first = self.run_main('begin')[1]['task']
+        second = self.run_main('begin')[1]['task']
+        self.assertNotEqual(first, second)
+
+    def test_begin_never_stores_the_session_identifier(self):
+        marker = 'conversation-CANARY-7f3a'
+        task = self.run_main('--session', marker, 'begin')[1]['task']
+        stored = b''.join(path.read_bytes() for path in self.state.rglob('*') if path.is_file())
+        self.assertNotIn(marker.encode(), stored)
+        self.assertIn(task.encode(), stored)
+
+    def test_begun_task_can_be_staged_and_skipped_offline(self):
+        proof = self.project / 'qa' / 'proof.json'
+        proof.parent.mkdir()
+        proof.write_text('{"result": "passed"}')
+        record = {'schema': 'confirmed-summary-v1', 'reviewed': True, 'confirmation': 'tool_verified',
+                  'status': 'verified_local', 'summary': '合成验收：显式开启的任务可以暂存。',
+                  'facts': ['这是合成测试事实。'],
+                  'evidence': [{'kind': 'artifact', 'path': 'qa/proof.json',
+                                'sha256': hashlib.sha256(proof.read_bytes()).hexdigest(), 'result': 'passed'}]}
+        task = self.run_main('begin')[1]['task']
+        code, staged = self.run_main('--task', task, 'stage', stdin=json.dumps(record).encode())
+        self.assertEqual((code, staged['phase']), (0, 'staged'))
+        other = self.run_main('begin')[1]['task']
+        code, skipped = self.run_main('--task', other, 'skip')
+        self.assertEqual((code, skipped['phase']), (0, 'skipped'))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

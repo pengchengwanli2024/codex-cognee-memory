@@ -1,0 +1,43 @@
+{
+  "provider": "cognee-memory",
+  "root": "../skills",
+  "skills": {
+    "codebase": {
+      "hidden": true
+    },
+    "cognee-digest": {
+      "hidden": true
+    },
+    "cognee-forget": {
+      "hidden": true
+    },
+    "cognee-keys": {
+      "hidden": true
+    },
+    "cognee-standup": {
+      "hidden": true
+    },
+    "cognee-switch-datasets": {
+      "hidden": true
+    },
+    "cognee-timeline": {
+      "hidden": true
+    },
+    "daily-memory": {
+      "name": "cognee-daily-memory",
+      "description": "Recall and save reviewed project summaries in a local Cognee backend: open a task, recall signed summaries for this project, then stage a small confirmed summary and submit it. Use when the user asks to remember, save or recall verified project outcomes with Cognee, or to carry confirmed decisions across sessions. Summaries only: never raw conversation, tool output or credentials. Needs a running local Cognee backend for recall and submission.",
+      "preface": "## Running in DeepSeek Harness\n\nThis skill was written for Codex lifecycle hooks. DeepSeek Harness (DSH) runs no `SessionStart`, `UserPromptSubmit` or `Stop` hooks, so **nothing is recalled or saved automatically**: no task id is injected and no Stop hook submits. Use the same adapter by hand, in this order, with `<project>` set to the absolute project directory (the Git root, not the home directory):\n\n```text\nS=\"{{packageDir}}/scripts/daily_memory.py\"\npython3 \"$S\" --project <project> begin                      # prints {\"task\": \"<32 hex>\"}; local only\nprintf '%s' \"<short topic words>\" | python3 \"$S\" --project <project> recall   # signed summaries, or an error when the backend is down\npython3 \"$S\" --project <project> --task <task> stage < summary.json   # or: skip\npython3 \"$S\" --project <project> --task <task> --wait 30 flush        # submits once; reports staged / submitted / indexed / unknown\npython3 \"$S\" --project <project> --task <task> status\n```\n\n- Where the text below says \"the exact task and script path injected by UserPromptSubmit\", use the `task` printed by `begin` and the script path above. \"Stop submits\" means your explicit `flush`.\n- `recall`, `flush` and indexing need the local Cognee HTTP backend and its key. `{\"ok\": false, \"reason\": \"operation_rejected_or_unavailable\"}` from `recall` or a phase of `unknown` means it was unreachable or refused: say so, keep the receipt, and do not claim the summary was saved or that no history exists. `begin`, `stage`, `skip` and `status` work offline.\n- Use this workflow when the user asks to remember or recall project outcomes with Cognee. Do not run it for every DSH task, and do not ask the user to type these commands.\n- Check the backend with the `cognee-setup` skill. The rules about Codex `/hooks` approval do not apply in DSH."
+    },
+    "local-ui": {
+      "hidden": true
+    },
+    "memory": {
+      "hidden": true
+    },
+    "setup": {
+      "name": "cognee-setup",
+      "description": "Check or configure the Cognee connection used by cognee-daily-memory: whether the local backend is reachable, which mode and endpoint are resolved, and why recall or saving reports unavailable. Use when the user asks whether Cognee is ready or connected, or when a Cognee command fails.",
+      "preface": "## Running in DeepSeek Harness\n\n- `${CODEX_PLUGIN_ROOT}` below is `{{packageDir}}`; substitute that path in every command.\n- DSH runs no lifecycle hooks, so the statements about automatic hooks and Codex `/hooks` approval do not apply. Recall and saving are explicit: see the `cognee-daily-memory` skill.\n- This skill only diagnoses and configures the connection. Installing or starting a Cognee runtime changes durable local state: describe it and get the user's agreement first."
+    }
+  }
+}
